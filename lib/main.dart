@@ -32,20 +32,12 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Online Exam',
           theme: ThemeData(
-            fontFamily: "Inter",
-            scaffoldBackgroundColor: whitebackgroundColor,
-            primaryColor:primaryColor
-
-
-          ),
-
-
-
-          home:RegisterScreen(),
-
+              fontFamily: "Inter",
+              scaffoldBackgroundColor: whitebackgroundColor,
+              primaryColor: primaryColor),
+          home: RegisterScreen(),
         );
       },
-
     );
   }
 }
