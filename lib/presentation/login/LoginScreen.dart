@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_exam/core/res/colors.dart';
+import 'package:online_exam/core/token_manager.dart';
 import 'package:online_exam/di/di.dart';
 import 'package:online_exam/domain/model/User.dart';
 import 'package:online_exam/presentation/ForgetPassword/ForgetPasswordScreen.dart';
@@ -19,41 +20,87 @@ class _LoginScreenState extends State<LoginScreen> {
   String _email = '';
   String _password = '';
   bool _isButtonEnabled = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberedCredentials();
+  }
 
   void _checkFields() {
     setState(() {
       _isButtonEnabled = _email.isNotEmpty && _password.isNotEmpty;
     });
   }
+
   bool _isChecked = false;
 
   // Field injection
   LoginViewModel viewModel = getIt.get<LoginViewModel>();
+  Future<void> _loadRememberedCredentials() async {
+    String? email = await TokenManager.getToken(key: 'email');
+    String? password = await TokenManager.getToken(key: 'password');
+    bool? rememberMe =
+        (await TokenManager.getToken(key: 'rememberMe')) == 'true';
+
+    setState(() {
+      _email = email ?? '';
+      _password = password ?? '';
+      _isChecked = rememberMe ?? false;
+      _checkFields();
+    });
+  }
+
+  Future<void> _handleRememberMe() async {
+    if (_isChecked) {
+      // Save email and password
+      await TokenManager.setToken('email', _email);
+      await TokenManager.setToken('password', _password);
+      await TokenManager.setToken('rememberMe', 'true');
+    } else {
+      // Clear saved credentials
+      await TokenManager.deleteToken(key: 'email');
+      await TokenManager.deleteToken(key: 'password');
+      await TokenManager.deleteToken(key: 'rememberMe');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => viewModel,
       child: Scaffold(
-
-       appBar: AppBar(
-         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-           elevation: 0,
-           title: Padding(
-             padding:  EdgeInsets.only(top:10.h),
-             child: Row(children: [IconButton(onPressed:() {
-             }, icon:Icon(Icons.arrow_back_ios,size:25,color: blackColor,)),
-               Text("Login",style: TextStyle(color:blackColor,fontWeight:FontWeight.w500,fontSize: 20.sp),)], ),
-           )),
-
-        body: BlocListener<LoginViewModel,LoginScreenState>(
-
+        appBar: AppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            title: Padding(
+              padding: EdgeInsets.only(top: 10.h),
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        size: 25,
+                        color: blackColor,
+                      )),
+                  Text(
+                    "Login",
+                    style: TextStyle(
+                        color: blackColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20.sp),
+                  )
+                ],
+              ),
+            )),
+        body: BlocListener<LoginViewModel, LoginScreenState>(
           listenWhen: (previous, current) {
-            return current is LoadingState || current is ErrorState || current is SuccessState;
+            return current is LoadingState ||
+                current is ErrorState ||
+                current is SuccessState;
           },
           listener: (context, state) {
             if (state is LoadingState) {
-
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -91,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen(user: state.user)),
+                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             }
           },
@@ -106,30 +153,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   style: TextStyle(fontSize: 15.sp),
                   decoration: InputDecoration(
-
                     labelText: 'Email',
                     hintText: 'Enter your email',
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    enabledBorder:  OutlineInputBorder(
+                    enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4.r),
                         borderSide: BorderSide(
                           color: Color(0xffBDBDBD),
                           width: 1.0,
                         )),
-                    focusedBorder:  OutlineInputBorder(
+                    focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color:Theme.of(context).primaryColor,
+                        color: Theme.of(context).primaryColor,
                         width: 2.0,
                       ),
                     ),
-
-
                     border: OutlineInputBorder(
-
                         borderRadius: BorderRadius.circular(4.r)),
                   ),
                 ),
-                SizedBox(height:20.h,),
+                SizedBox(
+                  height: 20.h,
+                ),
                 TextFormField(
                   onChanged: (value) {
                     _password = value;
@@ -137,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   style: TextStyle(fontSize: 15.sp),
                   decoration: InputDecoration(
-                    counter:    Row(
+                    counter: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
@@ -145,120 +190,132 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               width: 20.w,
                               child: Checkbox(
-                                activeColor:Theme.of(context).primaryColor,
-                                shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)
-                                ),
-
-                                focusColor: blackColor ,
+                                activeColor: Theme.of(context).primaryColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4)),
+                                focusColor: blackColor,
                                 value: _isChecked,
                                 onChanged: (value) {
-                                  _isChecked=!_isChecked;
                                   setState(() {
-
+                                    _isChecked = value ?? false;
                                   });
-
+                                  _handleRememberMe();
                                 },
                               ),
                             ),
-
-                            SizedBox(width: 6.w,),
-                            Text('Remember me',style: TextStyle(color:blackColor,fontSize:13.sp,
-                                fontWeight: FontWeight.w400)),
+                            SizedBox(
+                              width: 6.w,
+                            ),
+                            Text('Remember me',
+                                style: TextStyle(
+                                    color: blackColor,
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w400)),
                           ],
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) =>ForgetPasswordScreen ()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ForgetPasswordScreen()));
                           },
-                          child: Text('Forgot Password?',style: TextStyle(color:blackColor,fontSize:12.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.underline,),),
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: blackColor,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-
                     labelText: 'Password',
                     hintText: 'Enter your password ',
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    enabledBorder:  OutlineInputBorder(
+                    enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4.r),
                         borderSide: BorderSide(
                           color: Color(0xffBDBDBD),
                           width: 1.0,
                         )),
-                    focusedBorder:  OutlineInputBorder(
+                    focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color:Theme.of(context).primaryColor,
+                        color: Theme.of(context).primaryColor,
                         width: 2.0,
                       ),
                     ),
-
-
                     border: OutlineInputBorder(
-
-
                         borderRadius: BorderRadius.circular(4.r)),
                   ),
                 ),
-
-
-
                 SizedBox(
                   height: 20.h,
                 ),
-                BlocBuilder<LoginViewModel,LoginScreenState>(
+                BlocBuilder<LoginViewModel, LoginScreenState>(
                   builder: (context, state) {
                     switch (state) {
-                      case LoadingState():{
-                        return CircularProgressIndicator();
-                      }
-                      default:{
-                        return ElevatedButton(
-                            onPressed:
-                            _isButtonEnabled
+                      case LoadingState():
+                        {
+                          return CircularProgressIndicator();
+                        }
+                      default:
+                        {
+                          return ElevatedButton(
+                            onPressed: _isButtonEnabled
                                 ? () {
-                              login();
-                            }
+                                    login();
+                                  }
                                 : null,
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(double.infinity.w, 48.h),
-                            shape: RoundedRectangleBorder(
-
-                              borderRadius: BorderRadius.circular(100.r),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(double.infinity.w, 48.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100.r),
+                              ),
+                              backgroundColor:
+                                  _isButtonEnabled ? primaryColor : Colors.grey,
                             ),
-                            backgroundColor: _isButtonEnabled
-                                ?primaryColor
-                                : Colors.grey,
-                          ),
-
-                          child: Text(
-                            "Login",
-                            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500,color:whitebackgroundColor),
-                          ),);
-                      }
-
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: whitebackgroundColor),
+                            ),
+                          );
+                        }
                     }
-
                   },
                   buildWhen: (previous, current) {
                     return true;
                   },
                 ),
-
                 SizedBox(height: 15.h),
                 Padding(
-                  padding: const EdgeInsets.only(bottom:40),
+                  padding: const EdgeInsets.only(bottom: 40),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Don’t have an account?',style: TextStyle(color: blackColor,fontSize:16.sp,fontWeight: FontWeight.w400)),
-
+                      Text('Don’t have an account?',
+                          style: TextStyle(
+                              color: blackColor,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400)),
                       InkWell(
-                          onTap: (){},
-                          child: Text(' Sign Up',style: TextStyle(color:Theme.of(context).primaryColor,fontSize:16.sp,fontWeight: FontWeight.w500,decoration: TextDecoration.underline,))),
+                          onTap: () {},
+                          child: Text(' Sign Up',
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.underline,
+                              ))),
                     ],
                   ),
                 ),
-
               ],
             ),
           ),
@@ -267,27 +324,24 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void login(){
+  void login() {
     viewModel.doIntent(LoginIntent(_email, _password));
     // viewModel.doIntent();
   }
 }
 
-
 class HomeScreen extends StatelessWidget {
-  final User? user;
+  // final User? user;
 
-  HomeScreen({required this.user});
+  HomeScreen(
+      // {required this.user}
+      );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Home')),
-      body: Center(child: Text('Welcome, ${user?.firstName ??'Elevate'}')),
+      // body: Center(child: Text('Welcome, ${user?.firstName ??'Elevate'}')),
     );
   }
 }
-
-
-
-
