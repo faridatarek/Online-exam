@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_exam/core/res/colors.dart';
+import 'package:online_exam/core/token_manager.dart';
 import 'package:online_exam/di/di.dart';
 import 'package:online_exam/presentation/login/LoginScreen.dart';
-import 'package:online_exam/presentation/register/RegisterScreen.dart';
 
-/*void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: LoginScreen(),
-  ));
 
-}*/
-void main() {
-  configureDependencies();
-  runApp(const MyApp());
+  String? token = await TokenManager.getToken(key: 'token');
+
+  runApp(MyApp(startScreen: token != null ? HomeScreen() : LoginScreen()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget startScreen;
+
+  const MyApp({super.key, required this.startScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +30,11 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Online Exam',
           theme: ThemeData(
-              fontFamily: "Inter",
-              scaffoldBackgroundColor: whitebackgroundColor,
-              primaryColor: primaryColor),
-          home: RegisterScreen(),
+            fontFamily: "Inter",
+            scaffoldBackgroundColor: whitebackgroundColor,
+            primaryColor: primaryColor,
+          ),
+          home: startScreen, // Start with either HomeScreen or LoginScreen
         );
       },
     );
