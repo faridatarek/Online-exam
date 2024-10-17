@@ -496,12 +496,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fontWeight: FontWeight.w400)),
 
                         InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) =>LoginScreen()));
+                            },
                             child: Text(' Login', style: TextStyle(color: Theme
                                 .of(context)
                                 .primaryColor,
                                 fontSize: 16.sp,
-                                fontWeight: FontWeight.w500))),
+                                fontWeight: FontWeight.w500,decoration: TextDecoration.underline,))),
                       ],
                     ),
                   ),

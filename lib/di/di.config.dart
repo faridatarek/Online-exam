@@ -18,10 +18,12 @@ import '../data/datasource/auth/AuthOfflineDataSourceImpl.dart' as _i5;
 import '../data/datasource/auth/AuthOnlineDataSourceImpl.dart' as _i7;
 import '../data/repository/auth/AuthRepoImpl.dart' as _i9;
 import '../domain/repository/AuthRepository.dart' as _i8;
-import '../domain/usecase/LoginUseCase.dart' as _i10;
-import '../domain/usecase/RegisterUseCase.dart' as _i12;
-import '../presentation/login/LoginViewModel.dart' as _i11;
-import '../presentation/register/RegisterViewModel.dart' as _i13;
+import '../domain/usecase/ForgetPasswordUseCase.dart' as _i10;
+import '../domain/usecase/LoginUseCase.dart' as _i11;
+import '../domain/usecase/RegisterUseCase.dart' as _i13;
+import '../presentation/ForgetPassword/ForgetPasswordViewModel.dart' as _i15;
+import '../presentation/login/LoginViewModel.dart' as _i12;
+import '../presentation/register/RegisterViewModel.dart' as _i14;
 
 extension GetItInjectableX on _i1.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -43,14 +45,18 @@ extension GetItInjectableX on _i1.GetIt {
           gh<_i6.AuthOnlineDatasource>(),
           gh<_i4.AuthOfflineDatasource>(),
         ));
-    gh.factory<_i10.LoginUseCase>(
-        () => _i10.LoginUseCase(gh<_i8.AuthRepository>()));
-    gh.factory<_i11.LoginViewModel>(
-        () => _i11.LoginViewModel(gh<_i10.LoginUseCase>()));
-    gh.factory<_i12.RegisterUseCase>(
-        () => _i12.RegisterUseCase(gh<_i8.AuthRepository>()));
-    gh.factory<_i13.RegisterViewModel>(
-        () => _i13.RegisterViewModel(gh<_i12.RegisterUseCase>()));
+    gh.factory<_i10.ForgetPasswordUsecase>(
+        () => _i10.ForgetPasswordUsecase(gh<_i8.AuthRepository>()));
+    gh.factory<_i11.LoginUseCase>(
+        () => _i11.LoginUseCase(gh<_i8.AuthRepository>()));
+    gh.factory<_i12.LoginViewModel>(
+        () => _i12.LoginViewModel(gh<_i11.LoginUseCase>()));
+    gh.factory<_i13.RegisterUseCase>(
+        () => _i13.RegisterUseCase(gh<_i8.AuthRepository>()));
+    gh.factory<_i14.RegisterViewModel>(
+        () => _i14.RegisterViewModel(gh<_i13.RegisterUseCase>()));
+    gh.factory<_i15.ForegetPasswordViewmodel>(
+        () => _i15.ForegetPasswordViewmodel(gh<_i10.ForgetPasswordUsecase>()));
     return this;
   }
 }

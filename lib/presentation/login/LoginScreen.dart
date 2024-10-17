@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_exam/core/res/colors.dart';
 import 'package:online_exam/di/di.dart';
 import 'package:online_exam/domain/model/User.dart';
+import 'package:online_exam/presentation/ForgetPassword/ForgetPasswordScreen.dart';
 import 'package:online_exam/presentation/login/LoginViewModel.dart';
 import 'package:online_exam/presentation/utils.dart';
 
@@ -167,6 +168,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) =>ForgetPasswordScreen ()));
                           },
                           child: Text('Forgot Password?',style: TextStyle(color:blackColor,fontSize:12.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.underline,),),
                         ),
@@ -251,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       InkWell(
                           onTap: (){},
-                          child: Text(' Sign Up',style: TextStyle(color:Theme.of(context).primaryColor,fontSize:16.sp,fontWeight: FontWeight.w500))),
+                          child: Text(' Sign Up',style: TextStyle(color:Theme.of(context).primaryColor,fontSize:16.sp,fontWeight: FontWeight.w500,decoration: TextDecoration.underline,))),
                     ],
                   ),
                 ),
