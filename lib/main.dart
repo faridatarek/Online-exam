@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_exam/core/providers/appConfigProvider.dart';
 import 'package:online_exam/core/res/colors.dart';
+import 'package:online_exam/core/res/toke_manager.dart';
 import 'package:online_exam/di/di.dart';
+import 'package:online_exam/presentation/Exams/Subjects/SubjectsScreen.dart';
 import 'package:online_exam/presentation/login/LoginScreen.dart';
-import 'package:online_exam/presentation/register/RegisterScreen.dart';
+import 'package:provider/provider.dart';
 
 /*void main() {
   configureDependencies();
@@ -13,9 +16,14 @@ import 'package:online_exam/presentation/register/RegisterScreen.dart';
   ));
 
 }*/
-void main() {
-  configureDependencies();
-  runApp(const MyApp());
+void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await configureDependencies();
+  String? token= await TokenManager.getToken(key:"token");
+  getIt.get<AppConfigProvider>().token=token??"";
+  runApp(ChangeNotifierProvider(
+    create: (context) =>getIt.get<AppConfigProvider>(),
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -41,7 +49,7 @@ class MyApp extends StatelessWidget {
 
 
 
-          home:RegisterScreen(),
+          home:getIt<AppConfigProvider>().token.isEmpty?LoginScreen() :SubjectSearchView(),
 
         );
       },

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:online_exam/domain/common/CustomExceptions.dart';
 
 String extractErrorMessage(Exception? exception){
-  var message = "something went wrong";
+  print(exception);
+  var message = "NoInternetError";
   if(exception is NoInternetError){
     message = "please check internet connection";
   }else if (exception is ServerError){
@@ -35,3 +36,27 @@ void showCustomDialog(BuildContext context,
     },
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

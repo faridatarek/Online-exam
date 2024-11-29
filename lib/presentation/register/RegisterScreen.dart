@@ -520,6 +520,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void register() {
     viewModel.doIntent(RegisterIntent(
+
         _email,
         _firstName,
         _lastName,

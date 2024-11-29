@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_exam/core/res/colors.dart';
+import 'package:online_exam/core/res/toke_manager.dart';
 import 'package:online_exam/di/di.dart';
 import 'package:online_exam/domain/model/User.dart';
+import 'package:online_exam/presentation/Exams/Subjects/SubjectsScreen.dart';
 import 'package:online_exam/presentation/ForgetPassword/ForgetPasswordScreen.dart';
 import 'package:online_exam/presentation/login/LoginViewModel.dart';
 import 'package:online_exam/presentation/utils.dart';
@@ -25,10 +27,23 @@ class _LoginScreenState extends State<LoginScreen> {
       _isButtonEnabled = _email.isNotEmpty && _password.isNotEmpty;
     });
   }
-  bool _isChecked = false;
+
 
   // Field injection
   LoginViewModel viewModel = getIt.get<LoginViewModel>();
+ /* Future<void> _handleRememberMe() async {
+    if (_isChecked) {
+      // Save email and password
+      await TokenManager.setToken('email');
+      await TokenManager.setToken('password');
+      await TokenManager.setToken('rememberMe');
+    } else {
+      // Clear saved credentials
+      await TokenManager.deleteToken(key: 'email');
+      await TokenManager.deleteToken(key: 'password');
+      await TokenManager.deleteToken(key: 'rememberMe');
+    }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
            title: Padding(
              padding:  EdgeInsets.only(top:10.h),
              child: Row(children: [IconButton(onPressed:() {
-             }, icon:Icon(Icons.arrow_back_ios,size:25,color: blackColor,)),
+             }, icon:const Icon(Icons.arrow_back_ios,size:25,color: blackColor,)),
                Text("Login",style: TextStyle(color:blackColor,fontWeight:FontWeight.w500,fontSize: 20.sp),)], ),
            )),
 
@@ -58,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 context: context,
                 barrierDismissible: false,
                 builder: (context) {
-                  return AlertDialog(
+                  return const AlertDialog(
                     content: Row(
                       children: [
                         CircularProgressIndicator(),
@@ -88,10 +103,12 @@ class _LoginScreenState extends State<LoginScreen> {
             }
 
             if (state is SuccessState) {
+
               Navigator.pop(context);
+
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen(user: state.user)),
+                MaterialPageRoute(builder: (context) => SubjectSearchView()),
               );
             }
           },
@@ -112,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     enabledBorder:  OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4.r),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                           color: Color(0xffBDBDBD),
                           width: 1.0,
                         )),
@@ -150,11 +167,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
 
                                 focusColor: blackColor ,
-                                value: _isChecked,
-                                onChanged: (value) {
-                                  _isChecked=!_isChecked;
+                                value: viewModel.isChecked,
+                                onChanged: (value){
                                   setState(() {
-
+                                    viewModel.isChecked = value ?? false;
                                   });
 
                                 },
@@ -181,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     enabledBorder:  OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4.r),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                           color: Color(0xffBDBDBD),
                           width: 1.0,
                         )),
@@ -209,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (context, state) {
                     switch (state) {
                       case LoadingState():{
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       }
                       default:{
                         return ElevatedButton(
@@ -282,8 +298,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home')),
-      body: Center(child: Text('Welcome, ${user?.firstName ??'Elevate'}')),
+      appBar: AppBar(title: const Text('Home')),
+      body: Center(child: Text('Welcome, ${user?.firstName ??'Userr'}')),
     );
   }
 }

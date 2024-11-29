@@ -1,15 +1,19 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:online_exam/core/providers/appConfigProvider.dart';
+import 'package:online_exam/core/res/toke_manager.dart';
 import 'package:online_exam/domain/common/ApiResult.dart';
 import 'package:online_exam/domain/model/User.dart';
 import 'package:online_exam/domain/usecase/LoginUseCase.dart';
 
 @injectable
 class LoginViewModel extends Cubit<LoginScreenState>{
-
+AppConfigProvider appConfigProvider ;
   LoginUseCase loginCase;
-  //                        start state
-  LoginViewModel(this.loginCase):super(InitialState());
+bool isChecked = false;
+
+//                        start state
+  LoginViewModel(this.loginCase,this.appConfigProvider):super(InitialState());
 
   void doIntent(LoginScreenIntent intent){
     switch (intent) {
@@ -26,6 +30,11 @@ class LoginViewModel extends Cubit<LoginScreenState>{
     switch (result) {
 
       case Success<User?>():{
+        if(isChecked) {
+        await  TokenManager.setToken(result.data?.token??"");
+        appConfigProvider.token=result.data?.token??"" ;
+        }
+
         emit(SuccessState(result.data));
       }
       case Fail<User?>():{

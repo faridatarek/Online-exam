@@ -15,4 +15,3 @@ abstract class AuthRepository{
   Future<Result<String>> forgotPassword(String email);
   Future<Result<bool>> verifyResetPassword(String resetCode);
   Future<Result<User?>> resetPassword(String email, String newPassword);
-}

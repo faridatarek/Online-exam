@@ -25,7 +25,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
-android {
+
+/*android {
     namespace "com.example.online_exam"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -44,6 +45,7 @@ android {
     }
 
     defaultConfig {
+        minSdkVersion flutter.minSdkVersion
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.online_exam"
         // You can update the following values to match your application needs.
@@ -61,7 +63,40 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+}*/
+android {
+    namespace "com.example.online_exam"
+    compileSdkVersion 34  // Explicitly set compileSdkVersion to at least 34
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion flutter.minSdkVersion  // Set to at least 19
+        applicationId "com.example.online_exam"
+        targetSdkVersion flutter.targetSdkVersion  // This will take the version defined in Flutter
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug  // Ensure signing config is properly set
+        }
+    }
 }
+
 
 flutter {
     source '../..'
@@ -70,3 +105,4 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+

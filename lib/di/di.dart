@@ -1,5 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:online_exam/domain/usecase/AllSubjectsUseCase.dart';
+import 'package:online_exam/presentation/Exams/Subjects/SubjectsViewModel.dart';
 import 'di.config.dart';
 
 final getIt = GetIt.instance;
@@ -9,5 +11,6 @@ final getIt = GetIt.instance;
   preferRelativeImports: true, // default
   asExtension: true, // default
 )
-void
-configureDependencies() => getIt.init();
+Future<void> configureDependencies() async{
+ await getIt.init();
+}

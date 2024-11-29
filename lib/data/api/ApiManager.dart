@@ -2,27 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:online_exam/data/api/ApiConstant.dart';
-import 'package:online_exam/data/api/model/request/RegisterRequest.dart';
 import 'package:online_exam/data/api/model/response/AuthResponse.dart';
+import 'package:online_exam/data/api/model/response/SubjectsResponse.dart';
 
-@lazySingleton
+@singleton
 class ApiManager{
-  late Dio _dio;
+ Dio _dio;
+ ApiManager(this._dio);
 
-  ApiManager(){
-    _dio = Dio(BaseOptions(
-        baseUrl: ApiConstants.baseUrl
-    ));
-    _dio.interceptors.add(LogInterceptor(
-      responseHeader: true,
-      requestHeader: true,
-      responseBody: true,
-      requestBody: true,
-      logPrint: (object) {
-        debugPrint("Api -> $object");
-      },
-    ));
-  }
 
 
 
@@ -61,4 +48,16 @@ class ApiManager{
         data: {"email": email, "newPassword": newPassword});
     return AuthResponse.fromJson(response.data);
   }
+
+
+  Future<SubjectResponse?> getAllSubjects(String token) async {
+    print(token);
+    var response = await _dio.get(ApiConstants.getAllSubjectsApi,options: Options(headers:{"token":token}));
+    if (response.statusCode == 200) {
+      return SubjectResponse.fromJson(response.data);
+    } else {
+      throw Exception('Failed to load subjects');
+    }
+  }
+
 }

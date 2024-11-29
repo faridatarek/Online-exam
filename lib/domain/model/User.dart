@@ -1,23 +1,4 @@
-/*class User {
-  User({
-    this.id,
-    this.username,
-    this.firstName,
-    this.lastName,
-    this.email,
-    this.phone,
-    this.isVerified,
-    this.token});
 
-  String? id;
-  String? username;
-  String? firstName;
-  String? lastName;
-  String? email;
-  String? phone;
-  bool? isVerified;
-  String? token;
-}*/
 class User {
   String? username;
   String? firstName;
@@ -28,6 +9,7 @@ class User {
   String? phone;
   bool? isVerified;
   String? token;
+  String? id;
   User(
       {this.username,
         this.firstName,
@@ -38,7 +20,8 @@ class User {
         this.phone,
         this.isVerified,
         this.token,
-        String? id});
+        String? id
+      });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     username: json['username'] as String?,
